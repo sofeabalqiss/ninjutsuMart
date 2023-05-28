@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>NinjutsuMart: ShinobiMarket - Cart</title>
+    <link rel="stylesheet" href="shinobistyle.css">
+</head>
+<body>
+    <h1>Your Cart</h1>
+
+    <div id="cart-items">
+        
+    </div>
+
+    <button id="clear-cart-button">Clear Cart</button>
+    <button id="pay-button">Pay</button>
+
+    <script>
+        let cartItems = JSON.parse(localStorage.getItem('cart')) || [];
+        const cartItemsContainer = document.getElementById('cart-items');
+
+        if (cartItems.length === 0) {
+            alert('Your cart is empty. Please go to the Ingredients page to add items.');
+            window.location.href = 'ingredients.html';
+        } else {
+            const updateCartItems = () => {
+                cartItemsContainer.innerHTML = '';
+                const cartItemsList = document.createElement('ul');
+                cartItems.forEach(item => {
+                    const listItem = document.createElement('li');
+                    const quantityInput = document.createElement('input');
+                    quantityInput.type = 'number';
+                    quantityInput.value = item.quantity;
+                    quantityInput.min = '1';
+                    quantityInput.addEventListener('change', (event) => {
+                        item.quantity = parseInt(event.target.value);
+                        localStorage.setItem('cart', JSON.stringify(cartItems));
+                    });
+                    listItem.textContent = `${item.name} - Price: ${item.price} - Quantity: `;
+                    listItem.appendChild(quantityInput);
+                    cartItemsList.appendChild(listItem);
+                });
+                cartItemsContainer.appendChild(cartItemsList);
+            };
+
+            updateCartItems();
+        }
+
+        const clearCartButton = document.getElementById('clear-cart-button');
+        clearCartButton.addEventListener('click', function() {
+            localStorage.removeItem('cart');
+            cartItemsContainer.innerHTML = '<p>Your cart is empty.</p>';
+        });
+
+        const payButton = document.getElementById('pay-button');
+        payButton.addEventListener('click', function() {
+            window.location.href = 'receipt.html';
+        });
+    </script>
+
+    <div class="container">
+        <button class="main-button" onclick="location.href='groceries.html'">Home</button>
+        <button class="main-button special" onclick="location.href='ingredients.html'">Ninja Supplies</button>
+        <button class="main-button" onclick="location.href='cart.html'">Ninja Tool Bag</button>
+        <button class="main-button" onclick="location.href='receipt.html'">Mission Accomplished</button>
+    </div>
+
+</body>
+</html>

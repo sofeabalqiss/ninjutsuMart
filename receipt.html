@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>NinjutsuMart: ShinobiMarket - Receipt</title>
+    <link rel="stylesheet" href="shinobistyle.css">
+
+    <style>
+        #receipt-container {
+            background-color: white;
+            color: black;
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+        .receipt-heading {
+            text-align: center;
+            font-weight: bold;
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+        .receipt-details {
+            text-align: left;
+            margin-bottom: 10px;
+        }
+
+        .receipt-item {
+            margin-bottom: 5px;
+        }
+
+        .receipt-item span {
+            display: inline-block;
+            width: 100px;
+        }
+
+        #total-price {
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        #delivery-fee {
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        #cart-items ul {
+            list-style: none; 
+            padding-left: 0;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <h1>Receipt</h1>
+
+    <!-- Display cart items and user details -->
+    <div id="receipt-container">
+        <div class="receipt-heading">******RECEIPT******</div>
+        <div class="receipt-details">
+            <div><span>Name:</span> <span id="name"></span></div>
+            <div><span>Address:</span> <span id="address"></span></div>
+            <div><span>Email:</span> <span id="email"></span></div>
+        </div>
+        <div id="cart-items"></div>
+        <div id="total-price"></div>
+        <div id="delivery-fee"></div>
+        <div class="receipt-heading">*******************</div>
+    </div>
+
+    <h2>User Details</h2>
+    <form id="user-details-form">
+        <fieldset>
+            <legend>User Registration</legend>
+
+            <div class="form-group">
+                <label for="name-input">Name:</label>
+                <input type="text" id="name-input" placeholder="Name">
+            </div>
+            <br>
+            <div class="form-group">
+                <label for="address-input">Address:</label>
+                <input type="text" id="address-input" placeholder="Address">
+            </div>
+            <br>
+            <div class="form-group">
+                <label for="email-input">Email:</label>
+                <input type="email" id="email-input" placeholder="Email">
+            </div>
+            <br>
+        </fieldset>
+        <button type="submit">Generate Receipt</button>
+    </form>
+
+    <script>
+        // Retrieve cart items from local storage
+        let cartItems = JSON.parse(localStorage.getItem('cart')) || [];
+        const receiptItemsContainer = document.getElementById('cart-items');
+        const totalPriceElement = document.getElementById('total-price');
+        const deliveryFeeElement = document.getElementById('delivery-fee');
+
+        // Calculate total price
+        const calculateTotalPrice = () => {
+            let totalPrice = 0;
+            cartItems.forEach(item => {
+                totalPrice += item.price * item.quantity;
+            });
+            return totalPrice;
+        };
+
+        // Calculate delivery fee based on total price
+        const calculateDeliveryFee = (totalPrice) => {
+            const deliveryFeeThreshold = 50; // Threshold for free delivery
+            const deliveryFee = totalPrice < deliveryFeeThreshold ? 10 : 0;
+            return deliveryFee;
+        };
+
+        if (cartItems.length === 0) {
+            alert('Your cart is empty. Please go to the Ingredients page to add items.');
+            window.location.href = 'ingredients.html';
+        } else {
+            const updateCartItems = () => {
+                receiptItemsContainer.innerHTML = '';
+                const receiptItemsList = document.createElement('ul');
+                cartItems.forEach(item => {
+                    const listItem = document.createElement('li');
+                    listItem.textContent = `${item.name} - Quantity: ${item.quantity}`;
+                    receiptItemsList.appendChild(listItem);
+                });
+                receiptItemsContainer.appendChild(receiptItemsList);
+
+                const totalPrice = calculateTotalPrice();
+                const deliveryFee = calculateDeliveryFee(totalPrice);
+
+                totalPriceElement.textContent = `Total Price: RM${totalPrice.toFixed(2)}`;
+                deliveryFeeElement.textContent = `Delivery Fee: RM${deliveryFee.toFixed(2)}`;
+            };
+
+            updateCartItems();
+        }
+
+        // Handle form submission to update user details
+        const userDetailsForm = document.getElementById('user-details-form');
+        const nameInput = document.getElementById('name-input');
+        const addressInput = document.getElementById('address-input');
+        const emailInput = document.getElementById('email-input');
+        const nameSpan = document.getElementById('name');
+        const addressSpan = document.getElementById('address');
+        const emailSpan = document.getElementById('email');
+
+        userDetailsForm.addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            // Retrieve entered user details
+            const name = nameInput.value;
+            const address = addressInput.value;
+            const email = emailInput.value;
+
+            // Update the receipt with user details
+            nameSpan.textContent = name;
+            addressSpan.textContent = address;
+            emailSpan.textContent = email;
+        });
+    </script>
+
+    <div class="container">
+        <button class="main-button" onclick="location.href='groceries.html'">Home</button>
+        <button class="main-button special" onclick="location.href='ingredients.html'">Ninja Supplies</button>
+        <button class="main-button" onclick="location.href='cart.html'">Ninja Tool Bag</button>
+        <button class="main-button" onclick="location.href='receipt.html'">Mission Accomplished</button>
+    </div>
+</body>
+</html>
